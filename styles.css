@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+:root {
+  --color-0: #006b8f;
+  --color-1: #a4aba8;
+  --color-2: #007ea7;
+  --color-3: #d6d6d5;
+  --color-4: #dce6e6;
+  --color-5: #fafafa;
+  --color-6: #0f0f0f;
+  --radius-1: 2px;
+  --radius-2: 5px;
+  --radius-3: 30px;
+  --shadow-1: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  --shadow-2: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  --shadow-3: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--color-6);
+  font-family: 'Lato', serif;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: minmax(360px, 30vw) minmax(auto, 70vw);
+  grid-template-rows: 100vh;
+}
+
+.map {
+  height: 100%;
+  width: 100%;
+}
+
+.sidebar {
+  background-color: var(--color-3);
+  border-right: 2px solid var(--color-1);
+  height: 100%;
+  padding: 3rem 1rem;
+}
+
+h1 {
+  padding-left: 2rem;
+}
+
+fieldset {
+  border: 1px solid var(--color-1);
+  border-radius: var(--radius-2);
+  border-bottom-right-radius: var(--radius-3);
+  box-shadow: var(--shadow-1);
+  background-color: var(--color-5);
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+label {
+  display: inline-block;
+  padding-right: 4px;
+  text-align: end;
+  width: 3rem;
+}
+
+input {
+  display: inline-block;
+  width: 12rem;
+}
+
+legend {
+  background-color: var(--color-4);
+  border-radius: var(--radius-2) var(--radius-3) 0 0;
+  box-shadow: var(--shadow-2);
+  margin-left: -1rem;
+  padding: .5rem 2rem;
+  width: calc(100% + 2rem);
+}
+
+button {
+  background-color: var(--color-2);
+  border: 1px solid var(--color-0);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-1);
+  color: var(--color-4);
+  display: block;
+  font-family: 'Lato', serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 1rem auto;
+  padding: .5rem 1rem;
+  width: 60%;
+}
+
+button:hover {
+  border-color: var(--color-2);
+  box-shadow: var(--shadow-3);
+  background-color: var(--color-0);
+  color: var(--color-5);
+  cursor: pointer;
+}
+
+.sidebar dl {
+  padding: .5rem;
+}
+
+.sidebar dt {
+  display: inline-block;
+  font-weight: bold;
+  width: 4rem;
+}
+
+.sidebar dl:first-of-type dt {
+  width: 8rem;
+}
+
+.sidebar dd {
+  display: inline-block;
+  padding-left: 2rem;
+  padding-bottom: 0.5rem;
+}
+
+.sidebar div {
+  padding-top: 2rem;
+}

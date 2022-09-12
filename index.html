@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Responsive</title>
+    <meta name="author" content="Jimmy Baker">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./libs/ol/ol.css">
+    <link rel="stylesheet" href="./styles.css">
+    <script async src="./libs/geotiff.js"></script>
+    <script defer src="./libs/proj4.js"></script>
+    <script defer src="./libs/ol/ol.js"></script>
+    <script defer src="./main.js"></script>
+  </head>
+
+  <body>
+    <div class="grid-container">
+      <div class="grid-one">
+        <div class="sidebar">
+          <h1>GeoTiff Data</h1>
+          <form>
+            <fieldset>
+              <legend>
+                <h2>Input Coordinates</h2>
+              </legend>
+              <p>Click on map to pull coordinates or enter WSG84/EPSG4326 coordinates.</p><br>
+              <label for="lat"><abbr title="Latitude">X</abbr>:</label>
+              <input id="lat" type="number" min="-124.70833333241457" max="-67.00000254405026" required><br>
+              <label for="lon"><abbr title="Longitude">Y</abbr>:</label>
+              <input id="lon" type="number" min="24.541666665598125" max="49.3750012726343" required><br>
+            </fieldset>
+            <fieldset>
+              <legend>
+                <h2>Input Date</h2>
+              </legend>
+              <label for="date">Date: </label><input type="date" name="date" id="date" min="1951-01-01" max="2022-05-01" value="2022-01-01" required>
+            </fieldset>
+            <button type="submit" id="submitBbox">RUN</button>
+            <!-- <button type="submit" id="submitPixel" disabled>Run (Pixel)</button> -->
+          </form>
+          <dl>
+            <dt>Execution Time:</dt>
+            <dd id="time">no data</dd>
+          </dl>
+          <dl>
+            <dt>Precip:</dt>
+            <dd id="precip">no data</dd><br>
+            <dt>T-Min:</dt>
+            <dd id="tmin">no data</dd><br>
+            <dt>T-Max:</dt>
+            <dd id="tmax">no data</dd><br>
+            <dt>T-Avg:</dt>
+            <dd id="tave">no data</dd><br>
+          </dl>
+        </div>
+      </div>
+      <div class="grid-two">
+        <div id="map" class="map"></div>
+      </div>
+    </div>
+
+  </body>
+
+</html>
