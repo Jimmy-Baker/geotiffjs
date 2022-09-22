@@ -49,119 +49,174 @@ function init() {
 		}
 	}
 
+	(function setForm() {
+		const prodButton = document.getElementById('prod');
+		const testButton = document.getElementById('test');
+		const dateField = document.getElementById('dateField');
+		const fileField = document.getElementById('fileField');
+		testButton.addEventListener('click', () => {
+			handleToggle();
+		});
+		prodButton.addEventListener('click', () => {
+			handleToggle();
+		});
+		function handleToggle() {
+			let hide = testButton.checked ? true : false;
+			dateField.style.display = testButton.checked ? 'none' : 'block';
+			fileField.style.display = prodButton.checked ? 'none' : 'block';
+		}
+		handleToggle();
+	})();
+
 	(function grabForm() {
-		const buttonBbox = document.getElementById('submitBbox');
-		// const buttonPixel = document.getElementById('submitPixel');
+		const submitPixel = document.getElementById('submitPixel');
+		const submitBbox = document.getElementById('submitBbox');
 		const xInput = document.getElementById('lat');
 		const yInput = document.getElementById('lon');
 		const dateInput = document.getElementById('date');
-		buttonBbox.addEventListener('click', e => {
+		submitPixel.addEventListener('click', e => {
 			e.preventDefault();
+			let type = document.getElementById('prod').checked ? 'prod' : 'test';
 			let coordinates = [xInput.value, yInput.value];
-			let geoURL = buildUrl(dateInput.value);
+			let geoURL = buildUrl(dateInput.value, type);
+			console.log(geoURL);
 			e.target.textContent = '...';
 			e.target.disabled = true;
-			handleTIFFbbox(geoURL, coordinates);
-			e.target.textContent = 'RUN';
+			handleTIFFpixel(geoURL, coordinates, type);
+			e.target.textContent = 'Pixel';
 			e.target.disabled = false;
 		});
-		// buttonPixel.addEventListener('click', e => {
-		// 	e.preventDefault();
-		// 	let coordinates = [xInput.value, yInput.value];
-		// 	let geoURL = buildUrl(dateInput.value);
-		// 	e.target.textContent = '...';
-		// 	e.target.disabled = true;
-		// 	handleTIFFpixel(geoURL, coordinates);
-		// 	e.target.textContent = 'RUN';
-		// 	e.target.disabled = false;
-		// });
+		submitBbox.addEventListener('click', e => {
+			e.preventDefault();
+			let type = document.getElementById('prod').checked ? 'prod' : 'test';
+			let coordinates = [xInput.value, yInput.value];
+			let geoURL = buildUrl(dateInput.value, type);
+			console.log(geoURL);
+			e.target.textContent = '...';
+			e.target.disabled = true;
+			handleTIFFbbox(geoURL, coordinates, type);
+			e.target.textContent = 'BBox';
+			e.target.disabled = false;
+		});
 	})();
 
-	async function handleTIFFbbox(geoUrl = '', coordinates = [], date) {
+	async function handleTIFFbbox(geoUrl = '', coordinates = [], type) {
 		const startTime = performance.now();
-
 		const tiff = await GeoTIFF.fromUrl(geoUrl);
-		// const image = await tiff.getImage();
-		// const width = image.getWidth();
-		// const height = image.getHeight();
-		// const bbox = image.getBoundingBox();
-		// const bbox = [
-		// 	-124.70833333241457, 24.541666665598125, -67.00000254405026,
-		// 	49.3750012726343
-		// ];
-		// const bboxHeight = bbox[3] - bbox[1];
-		// const bboxWidth = bbox[2] - bbox[0];
-		// const xPixel = Math.floor(((coordinates[0] - bbox[0]) / bboxWidth) * width);
-		// const yPixel = Math.floor(
-		// 	((coordinates[1] - bbox[1]) / bboxHeight) * height
-		// );
-		// console.log(xPixel, yPixel);
-		// const data = await tiff.readRasters({
-		// 	window: [xPixel, yPixel, xPixel + 1, yPixel + 1]
-		// });
+
 		const xCord = Math.round(coordinates[0] * 100) / 100;
 		const yCord = Math.round(coordinates[1] * 100) / 100;
 
-		const [precip, tmin, tmax, tave] = await tiff.readRasters({
-			bbox: [xCord, yCord, xCord + 0.1, yCord + 0.1],
-			resX: 0.1,
-			resY: 0.1
-		});
-
-		const endTime = performance.now();
-
-		updateSidebar(
-			{ precip: precip, tmin: tmin, tmax: tmax, tave: tave },
-			endTime - startTime
-		);
+		const pool = new GeoTIFF.Pool();
+		if (type === 'prod') {
+			const [precip, tmin, tmax, tave] = await tiff.readRasters({
+				bbox: [xCord, yCord, xCord + 0.1, yCord + 0.1],
+				resX: 0.1,
+				resY: 0.1,
+				interleave: true,
+				pool
+			});
+			let endTime = performance.now();
+			updateSidebar(
+				{ precip: precip, tmin: tmin, tmax: tmax, tave: tave },
+				endTime - startTime
+			);
+		} else {
+			const data = await tiff.readRasters({
+				bbox: [xCord, yCord, xCord + 0.1, yCord + 0.1],
+				resX: 0.1,
+				resY: 0.1,
+				interleave: true,
+				pool
+			});
+			let endTime = performance.now();
+			updateSidebar({ data: data }, endTime - startTime);
+		}
 	}
 
-	async function handleTIFFpixel(geoUrl = '', coordinates = []) {
+	async function handleTIFFpixel(geoUrl = '', coordinates = [], type) {
 		const startTime = performance.now();
 
 		const tiff = await GeoTIFF.fromUrl(geoUrl);
-		const image = await tiff.getImage();
 
-		const width = image.getWidth();
-		const height = image.getHeight();
-		const bbox = image.getBoundingBox();
+		const width = 1385;
+		const height = 596;
+		const bbox = [
+			-124.70833333241457, 24.541666665598125, -67.00000254405026,
+			49.3750012726343
+		];
 		const xPixel = Math.floor(
-			((coordinates[0] - bbox[0]) / (bbox[2] - bbox[0])) * width
+			Math.abs(((coordinates[0] - bbox[0]) / (bbox[2] - bbox[0])) * width)
 		);
 		const yPixel = Math.floor(
-			((coordinates[1] - bbox[1]) / (bbox[3] - bbox[1])) * height
+			Math.abs(((coordinates[1] - bbox[1]) / (bbox[3] - bbox[1])) * height)
 		);
 
-		console.log(xPixel, yPixel);
-		const [precip, tmin, tmax, tave] = await image.readRasters({
-			window: [xPixel, yPixel, xPixel + 1, yPixel + 1]
-		});
-
-		const endTime = performance.now();
-
-		updateSidebar(
-			{ precip: precip, tmin: tmin, tmax: tmax, tave: tave },
-			endTime - startTime
-		);
+		const pool = new GeoTIFF.Pool();
+		if (type === 'prod') {
+			const [precip, tmin, tmax, tave] = await tiff.readRasters({
+				window: [xPixel, yPixel, xPixel + 1, yPixel + 1],
+				interleave: true,
+				pool
+			});
+			let endTime = performance.now();
+			updateSidebar(
+				{ precip: precip, tmin: tmin, tmax: tmax, tave: tave },
+				endTime - startTime
+			);
+		} else {
+			const data = await tiff.readRasters({
+				window: [xPixel, yPixel, xPixel + 1, yPixel + 1],
+				interleave: true,
+				pool
+			});
+			let endTime = performance.now();
+			updateSidebar({ data: data }, endTime - startTime);
+		}
 	}
 
-	function buildUrl(date) {
-		const urlBase =
-			'https://storage.googleapis.com/noaa-ncei-nclimgrid-daily/cog';
-		console.log(date);
-		const year = date.substr(0, 4);
-		const month = date.substr(5, 2);
-		const day = date.substr(8, 2);
-		return `${urlBase}/${year}/nclimgrid-daily-${year}${month}${day}.tif`;
+	function buildUrl(date, type) {
+		if (type === 'prod') {
+			let urlBase =
+				'https://storage.googleapis.com/noaa-ncei-nclimgrid-daily/cog';
+			const year = date.substr(0, 4);
+			const month = date.substr(5, 2);
+			const day = date.substr(8, 2);
+			return `${urlBase}/${year}/nclimgrid-daily-${year}${month}${day}.tif`;
+		} else {
+			let urlBase =
+				'https://storage.googleapis.com/noaa-ncei-nclimgrid-daily/cog/testing/nclimgrid';
+			let file = document.getElementById('file').value;
+			return `${urlBase}-${file}.tif`;
+		}
 	}
 
 	function updateSidebar(data = {}, time) {
+		console.log(data);
 		for (const prop in data) {
 			if (data.hasOwnProperty(prop)) {
 				let el = document.getElementById(`${prop}`);
-				el.innerText = data[prop][0].toFixed(2);
+				if (prop === 'data') {
+					el.textContent = JSON.stringify(data);
+				} else {
+					el.innerText = data[prop].toFixed(2);
+				}
 			}
 		}
 		document.getElementById('time').textContent = time.toFixed(2) + ' ms';
 	}
+
+	(function preventRenter() {
+		const go = document.getElementById('go');
+		const fileInput = document.getElementById('file');
+		const renderInput = document.getElementById('render');
+		let file =
+			'https://storage.googleapis.com/noaa-ncei-nclimgrid-daily/cog/testing/nclimgrid-last30-byte8-deflate1.tif';
+
+		go.addEventListener('click', e => {
+			e.preventDefault();
+			go.href = `render.html?render=${renderInput.value}&file=${file}`;
+			window.open(go.href, '_blank');
+		});
+	})();
 }

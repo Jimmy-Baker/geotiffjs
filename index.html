@@ -22,6 +22,17 @@
           <form>
             <fieldset>
               <legend>
+                <h2>Format</h2>
+              </legend>
+              <div class="button-group">
+                <input type="radio" name="type" id="prod" value="prod" class="toggle" checked>
+                <label for="prod" class="toggle">Prod </label>
+                <input type="radio" name="type" id="test" value="test" class="toggle">
+                <label for="test" class="toggle">Test</label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>
                 <h2>Input Coordinates</h2>
               </legend>
               <p>Click on map to pull coordinates or enter WSG84/EPSG4326 coordinates.</p><br>
@@ -30,14 +41,39 @@
               <label for="lon"><abbr title="Longitude">Y</abbr>:</label>
               <input id="lon" type="number" min="24.541666665598125" max="49.3750012726343" required><br>
             </fieldset>
-            <fieldset>
+            <fieldset id="dateField">
               <legend>
                 <h2>Input Date</h2>
               </legend>
               <label for="date">Date: </label><input type="date" name="date" id="date" min="1951-01-01" max="2022-05-01" value="2022-01-01" required>
             </fieldset>
-            <button type="submit" id="submitBbox">RUN</button>
-            <!-- <button type="submit" id="submitPixel" disabled>Run (Pixel)</button> -->
+            <fieldset id="fileField">
+              <legend>
+                <h2>Parameters</h2>
+              </legend>
+              <label for="file">File: </label><select name="file" id="file" required>
+                <option value="daily-prcp-20220904">Daily Precip 2022-09-04</option>
+                <option value="daily-tmax-20220904">Daily Tmax 2022-09-04</option>
+                <option value="last30-byte8-deflate1">Last 30 8-byte deflate</option>
+                <option value="last30-byte8-lzw1">Last 30 8-byte lzw</option>
+                <option value="last30-float32-deflate1">Last 30 32-float deflate</option>
+                <option value="last30-float32-lzw1">Last 30 32-float lzw</option>
+                <option value="last30-int16-deflate1">Last 30 16-int deflate</option>
+                <option value="last30-int16-lzw1">Last 30 16-int lzw</option>
+              </select>
+            </fieldset>
+            <div class="button-group">
+              <button type="button" id="submitPixel">Pixel</button>
+              <button type="button" id="submitBbox">BBox</button>
+            </div>
+            <div class="link">
+              <label for="render">Render with:</label>
+              <select name="render" id="render">
+                <option value="olLayer">OL Layer</option>
+                <option value="plotty">Plotty JS</option>
+              </select>
+              <a href="render.html" id="go">GO</a>
+            </div>
           </form>
           <dl>
             <dt>Execution Time:</dt>
@@ -52,14 +88,16 @@
             <dd id="tmax">no data</dd><br>
             <dt>T-Avg:</dt>
             <dd id="tave">no data</dd><br>
+            <dt>Data:</dt>
+            <dd id="data">no data</dd><br>
           </dl>
         </div>
       </div>
       <div class="grid-two">
         <div id="map" class="map"></div>
       </div>
-    </div>
 
+    </div>
   </body>
 
 </html>

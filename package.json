@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "geotiff": "^2.0.5",
+    "geotiff-geokeys-to-proj4": "^2022.9.7",
+    "plotty": "^0.4.9",
+    "proj4": "^2.8.0"
+  }
+}

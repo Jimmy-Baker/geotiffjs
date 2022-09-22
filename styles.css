@@ -8,12 +8,14 @@
   --color-4: #dce6e6;
   --color-5: #fafafa;
   --color-6: #0f0f0f;
+  --color-7: #00455c;
   --radius-1: 2px;
   --radius-2: 5px;
   --radius-3: 30px;
   --shadow-1: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   --shadow-2: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
   --shadow-3: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  --shadow-4: rgba(10, 37, 64, 0.95) 0px -2px 6px 2px inset;
 }
 
 * {
@@ -33,6 +35,11 @@ body {
   grid-template-rows: 100vh;
 }
 
+.map-container {
+  height: 100vh;
+  width: 100vw;
+}
+
 .map {
   height: 100%;
   width: 100%;
@@ -42,7 +49,8 @@ body {
   background-color: var(--color-3);
   border-right: 2px solid var(--color-1);
   height: 100%;
-  padding: 3rem 1rem;
+  padding: 2rem 1rem;
+  overflow-y: scroll;
 }
 
 h1 {
@@ -55,20 +63,35 @@ fieldset {
   border-bottom-right-radius: var(--radius-3);
   box-shadow: var(--shadow-1);
   background-color: var(--color-5);
-  margin-top: 2rem;
+  margin-top: .5rem;
   padding: 1rem;
 }
 
-label {
+fieldset label {
   display: inline-block;
   padding-right: 4px;
   text-align: end;
   width: 3rem;
 }
 
+/* label.toggle {
+  background-color: var(--color-2);
+  color: #fff;
+  border-color: var(--color-0);
+  padding: 1rem 2rem;
+  width: auto;
+} */
+
 input {
   display: inline-block;
   width: 12rem;
+}
+
+input.toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  left: -999;
 }
 
 legend {
@@ -80,7 +103,9 @@ legend {
   width: calc(100% + 2rem);
 }
 
-button {
+
+button,
+label.toggle {
   background-color: var(--color-2);
   border: 1px solid var(--color-0);
   border-radius: var(--radius-2);
@@ -90,17 +115,24 @@ button {
   font-family: 'Lato', serif;
   font-weight: 700;
   font-size: 1.2rem;
-  margin: 1rem auto;
+  margin: 1rem auto .5rem;
+  text-align: center;
   padding: .5rem 1rem;
   width: 60%;
 }
 
-button:hover {
+button:hover,
+label.toggle:hover {
   border-color: var(--color-2);
   box-shadow: var(--shadow-3);
   background-color: var(--color-0);
   color: var(--color-5);
   cursor: pointer;
+}
+
+input.toggle:checked+label.toggle {
+  background-color: var(--color-7);
+  box-shadow: var(--shadow-1), var(--shadow-4);
 }
 
 .sidebar dl {
@@ -114,6 +146,7 @@ button:hover {
 }
 
 .sidebar dl:first-of-type dt {
+  margin-top: 1rem;
   width: 8rem;
 }
 
@@ -123,6 +156,98 @@ button:hover {
   padding-bottom: 0.5rem;
 }
 
-.sidebar div {
+.sidebar>div {
   padding-top: 2rem;
+}
+
+div.button-group {
+  align-content: center;
+  display: flex;
+  gap: 1rem;
+  margin-left: 20%;
+  margin-top: 1rem;
+  width: 60%;
+}
+
+fieldset div.button-group {
+  margin-top: -.5rem;
+}
+
+div.button-group button {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+div.link {
+  align-items: center;
+  align-content: space-around;
+  justify-content: center;
+  gap: .5rem;
+  display: flex;
+  margin-top: .5rem;
+}
+
+div.link label {
+  display: block;
+}
+
+div.link select {
+  font-size: 1rem;
+  padding: .25rem;
+  width: 8rem;
+}
+
+div.link a {
+  background-color: #dce6e6;
+  border: 1px solid var(--color-3);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-1);
+  color: var(--color-2);
+  display: inline;
+  flex: 0;
+  font-family: 'Lato', serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-align: center;
+  text-decoration: none;
+  padding: .25rem .5rem;
+  width: 60%;
+}
+
+div.link a:hover {
+  background-color: #fafafa;
+}
+
+canvas#canvas {
+  display: none;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+div#timescale {
+  background-color: #fff;
+  bottom: 0;
+  display: block;
+  height: 160px;
+  left: 0;
+  padding: 1rem;
+  position: fixed;
+  width: 240px;
+}
+
+@media screen and (max-width: 700px) {
+  .grid-container {
+    display: grid;
+    grid-template-columns: 100vw;
+    grid-template-rows: minmax(300px, 30vw) auto;
+  }
+
+  .grid-one {
+    order: 2;
+  }
+
 }
