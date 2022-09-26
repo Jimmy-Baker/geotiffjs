@@ -131,6 +131,10 @@ function init() {
 			});
 			let endTime = performance.now();
 			updateSidebar({ data: data }, endTime - startTime);
+			const graphButton = document.getElementById('graphButton');
+			graphButton.addEventListener('click', () => {
+				makeGraph(data, 'temp', false);
+			});
 		}
 	}
 
@@ -172,6 +176,10 @@ function init() {
 			});
 			let endTime = performance.now();
 			updateSidebar({ data: data }, endTime - startTime);
+			const graphButton = document.getElementById('graphButton');
+			graphButton.addEventListener('click', () => {
+				makeGraph(data, 'temp', false);
+			});
 		}
 	}
 
@@ -206,7 +214,74 @@ function init() {
 		document.getElementById('time').textContent = time.toFixed(2) + ' ms';
 	}
 
-	(function preventRenter() {
+	function makeGraph(rawData, prop, doAnimate) {
+		const margin = { top: 10, right: 10, bottom: 20, left: 20 };
+		const div = document.getElementById('graph');
+		let width = div.clientWidth - margin.left - margin.right;
+		let height = div.clientHeight - margin.top - margin.bottom;
+		console.log(width, height);
+		const svg = d3
+			.select('#graph')
+			.append('svg')
+			.attr('width', width + margin.left + margin.right)
+			.attr('height', height + margin.top + margin.bottom)
+			.append('g')
+			.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+		//transform data
+		data = handleData(rawData, ['precip', 'temp']);
+
+		// add x axis
+		let x = d3.scaleLinear().domain([0, 30]).range([0, width]);
+		svg
+			.append('g')
+			.attr('transform', 'translate(0,' + height + ')')
+			.call(d3.axisBottom(x));
+
+		// add y axis
+		let y = d3.scaleLinear().domain([0, 50]).range([height, 0]);
+		svg.append('g').call(d3.axisLeft(y));
+
+		console.log(data.temp);
+		console.log(prop);
+		console.log(data[prop]);
+
+		// append the line
+		svg
+			.append('path')
+			.datum(data[prop])
+			.attr('fill', 'none')
+			.attr('stroke', 'steelblue')
+			.attr('stroke-width', 1.5)
+			.attr(
+				'd',
+				d3
+					.line()
+					.x(function (d) {
+						return x(d[0]);
+					})
+					.y(function (d) {
+						return y(d[1]);
+					})
+			);
+	}
+
+	function handleData(data, params = []) {
+		let processed = {};
+		params.forEach(param => {
+			processed[param] = [];
+			for (
+				i = params.indexOf(param), j = 0;
+				i < data.length;
+				i = i + params.length, j++
+			) {
+				processed[param].push([j, parseFloat(data[i])]);
+			}
+		});
+		return processed;
+	}
+
+	(function preventRender() {
 		const go = document.getElementById('go');
 		const fileInput = document.getElementById('file');
 		const renderInput = document.getElementById('render');
