@@ -21,7 +21,7 @@
         <div class="sidebar">
           <h1>GeoTiff Data</h1>
           <form>
-            <fieldset>
+            <!-- <fieldset>
               <legend>
                 <h2>Format</h2>
               </legend>
@@ -31,7 +31,7 @@
                 <input type="radio" name="type" id="test" value="test" class="toggle">
                 <label for="test" class="toggle">Test</label>
               </div>
-            </fieldset>
+            </fieldset> -->
             <fieldset>
               <legend>
                 <h2>Input Coordinates</h2>
@@ -42,13 +42,13 @@
               <label for="lon"><abbr title="Longitude">Y</abbr>:</label>
               <input id="lon" type="number" min="24.541666665598125" max="49.3750012726343" required><br>
             </fieldset>
-            <fieldset id="dateField">
+            <!-- <fieldset id="dateField">
               <legend>
                 <h2>Input Date</h2>
               </legend>
               <label for="date">Date: </label><input type="date" name="date" id="date" min="1951-01-01" max="2022-05-01" value="2022-01-01" required>
-            </fieldset>
-            <fieldset id="fileField">
+            </fieldset> -->
+            <!-- <fieldset id="fileField">
               <legend>
                 <h2>Parameters</h2>
               </legend>
@@ -62,25 +62,26 @@
                 <option value="last30-int16-deflate1">Last 30 16-int deflate</option>
                 <option value="last30-int16-lzw1">Last 30 16-int lzw</option>
               </select>
-            </fieldset>
-            <div class="button-group">
+            </fieldset> -->
+            <!-- <div class="button-group">
               <button type="button" id="submitPixel">Pixel</button>
               <button type="button" id="submitBbox">BBox</button>
-            </div>
-            <div class="link">
+            </div> -->
+            <!-- <div class="link">
               <label for="render">Render with:</label>
               <select name="render" id="render">
                 <option value="olLayer">OL Layer</option>
                 <option value="plotty">Plotty JS</option>
               </select>
               <a href="render.html" id="go">GO</a>
-            </div>
+            </div> -->
+            <button class="button" id="submit">Graph Data</button>
           </form>
           <dl>
             <dt>Execution Time:</dt>
             <dd id="time">no data</dd>
           </dl>
-          <dl>
+          <!-- <dl>
             <dt>Precip:</dt>
             <dd id="precip">no data</dd><br>
             <dt>T-Min:</dt>
@@ -91,9 +92,11 @@
             <dd id="tave">no data</dd><br>
             <dt>Data:</dt>
             <dd id="data">no data</dd><br>
-          </dl>
-          <button class="button" id="graphButton">Graph Data</button>
-          <div id="graph"></div>
+          </dl> -->
+          <!-- <button class="button" id="graphButton">Graph Data</button>
+          -->
+          <div id="tempGraph"></div>
+          <div id="precipGraph"></div>
         </div>
       </div>
       <div class="grid-two">

@@ -49,7 +49,7 @@ function init() {
 		}
 	}
 
-	(function setForm() {
+	function setForm() {
 		const prodButton = document.getElementById('prod');
 		const testButton = document.getElementById('test');
 		const dateField = document.getElementById('dateField');
@@ -66,9 +66,9 @@ function init() {
 			fileField.style.display = prodButton.checked ? 'none' : 'block';
 		}
 		handleToggle();
-	})();
+	}
 
-	(function grabForm() {
+	function grabForm() {
 		const submitPixel = document.getElementById('submitPixel');
 		const submitBbox = document.getElementById('submitBbox');
 		const xInput = document.getElementById('lat');
@@ -79,7 +79,6 @@ function init() {
 			let type = document.getElementById('prod').checked ? 'prod' : 'test';
 			let coordinates = [xInput.value, yInput.value];
 			let geoURL = buildUrl(dateInput.value, type);
-			console.log(geoURL);
 			e.target.textContent = '...';
 			e.target.disabled = true;
 			handleTIFFpixel(geoURL, coordinates, type);
@@ -91,11 +90,27 @@ function init() {
 			let type = document.getElementById('prod').checked ? 'prod' : 'test';
 			let coordinates = [xInput.value, yInput.value];
 			let geoURL = buildUrl(dateInput.value, type);
-			console.log(geoURL);
 			e.target.textContent = '...';
 			e.target.disabled = true;
 			handleTIFFbbox(geoURL, coordinates, type);
 			e.target.textContent = 'BBox';
+			e.target.disabled = false;
+		});
+	}
+
+	(function grabForm2() {
+		const xInput = document.getElementById('lat');
+		const yInput = document.getElementById('lon');
+		const submit = document.getElementById('submit');
+		const file = 'last30-byte8-deflate1';
+		submit.addEventListener('click', e => {
+			e.preventDefault();
+			let coordinates = [xInput.value, yInput.value];
+			let geoURL = buildUrl(null, 'test', file);
+			e.target.textContent = '...';
+			e.target.disabled = true;
+			handleTIFFbbox(geoURL, coordinates, 'test');
+			e.target.textContent = 'Graph Data';
 			e.target.disabled = false;
 		});
 	})();
@@ -131,10 +146,8 @@ function init() {
 			});
 			let endTime = performance.now();
 			updateSidebar({ data: data }, endTime - startTime);
-			const graphButton = document.getElementById('graphButton');
-			graphButton.addEventListener('click', () => {
-				makeGraph(data, 'temp', false);
-			});
+			makeGraph(data, 'temp', 'tempGraph', false);
+			makeGraph(data, 'precip', 'precipGraph', false);
 		}
 	}
 
@@ -183,7 +196,7 @@ function init() {
 		}
 	}
 
-	function buildUrl(date, type) {
+	function buildUrl(date, type, file = null) {
 		if (type === 'prod') {
 			let urlBase =
 				'https://storage.googleapis.com/noaa-ncei-nclimgrid-daily/cog';
@@ -194,34 +207,36 @@ function init() {
 		} else {
 			let urlBase =
 				'https://storage.googleapis.com/noaa-ncei-nclimgrid-daily/cog/testing/nclimgrid';
-			let file = document.getElementById('file').value;
+			file = file ?? document.getElementById('file').value;
 			return `${urlBase}-${file}.tif`;
 		}
 	}
 
 	function updateSidebar(data = {}, time) {
-		console.log(data);
 		for (const prop in data) {
 			if (data.hasOwnProperty(prop)) {
 				let el = document.getElementById(`${prop}`);
-				if (prop === 'data') {
-					el.textContent = JSON.stringify(data);
-				} else {
-					el.innerText = data[prop].toFixed(2);
+				if (el) {
+					if (prop === 'data') {
+						el.textContent = JSON.stringify(data);
+					} else {
+						el.innerText = data[prop].toFixed(2);
+					}
 				}
 			}
 		}
 		document.getElementById('time').textContent = time.toFixed(2) + ' ms';
 	}
 
-	function makeGraph(rawData, prop, doAnimate) {
+	function makeGraph(rawData, prop, destination, doAnimate) {
 		const margin = { top: 10, right: 10, bottom: 20, left: 20 };
-		const div = document.getElementById('graph');
+		const div = document.getElementById(destination);
+		console.log(div);
 		let width = div.clientWidth - margin.left - margin.right;
 		let height = div.clientHeight - margin.top - margin.bottom;
 		console.log(width, height);
 		const svg = d3
-			.select('#graph')
+			.select(div)
 			.append('svg')
 			.attr('width', width + margin.left + margin.right)
 			.attr('height', height + margin.top + margin.bottom)
@@ -229,8 +244,8 @@ function init() {
 			.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 		//transform data
-		data = handleData(rawData, ['precip', 'temp']);
-
+		let data = handleData(rawData, ['precip', 'temp']);
+		console.log(data);
 		// add x axis
 		let x = d3.scaleLinear().domain([0, 30]).range([0, width]);
 		svg
@@ -239,12 +254,22 @@ function init() {
 			.call(d3.axisBottom(x));
 
 		// add y axis
-		let y = d3.scaleLinear().domain([0, 50]).range([height, 0]);
+		let y = d3.scaleLinear().domain(ydomain()).range([height, 0]);
 		svg.append('g').call(d3.axisLeft(y));
 
-		console.log(data.temp);
-		console.log(prop);
-		console.log(data[prop]);
+		function ydomain() {
+			if (prop === 'precip') {
+				let max = d3.max(data.precip, function (d) {
+					return d[1];
+				});
+				return [0, max * 1.5];
+			} else if (prop === 'temp') {
+				return [0, 120];
+			}
+		}
+		// console.log(data.temp);
+		// console.log(prop);
+		// console.log(data[prop]);
 
 		// append the line
 		svg
@@ -281,7 +306,7 @@ function init() {
 		return processed;
 	}
 
-	(function preventRender() {
+	function preventRender() {
 		const go = document.getElementById('go');
 		const fileInput = document.getElementById('file');
 		const renderInput = document.getElementById('render');
@@ -293,5 +318,5 @@ function init() {
 			go.href = `render.html?render=${renderInput.value}&file=${file}`;
 			window.open(go.href, '_blank');
 		});
-	})();
+	}
 }
